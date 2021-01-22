@@ -1,0 +1,53 @@
+---
+- name: Setup nfs on new computer
+  hosts: otaserver
+  vars_files:
+    - vars/mounts.yml
+  tasks:
+    - name: Install nfs-utils
+      package:
+        name: nfs-utils
+        state: latest
+
+        #    - name: Make sure dirs are mounted
+        # mount:
+        #  src: "{{ item.key }}"
+        #  path: "{{ item.value }}"
+        #   state: mounted
+        #  loop: "{{ storagedirs | dict2items }}"
+
+    - name: Make sure /etc/exports file is correct
+      lineinfile:
+        line: "{{ item.value }} 192.168.1.0/24(rw,sync,crossmnt,anonuid=1000,anongid=1000,insecure)"
+        state: present
+        create: True
+        path: /etc/exports
+      loop: "{{ storagedirs | dict2items }}"
+      notify:
+        - Run Exportfs
+
+    - name: setup firewalld
+      firewalld:
+        service: nfs
+        permanent: yes
+        state: enabled
+      notify:
+        - Restart Firewalld
+
+    - name: Make sure nfs-server.service is enabled and started
+      service:
+        name: nfs-server.service
+        enabled: yes
+        state: started
+
+     
+
+  handlers:
+    - name: Run Exportfs
+      shell:
+        cmd: "exportfs -arv"
+
+    - name: Restart Firewalld
+      service:
+        name: firewalld
+        state: restarted

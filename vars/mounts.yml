@@ -1,0 +1,7 @@
+---
+storagedirs:
+  /dev/mapper/External-Media: "/mnt/External/Media"
+  /dev/mapper/External-Library: "/mnt/External/Library"
+  /dev/mapper/External-VMs: "/mnt/External/VMs"
+  /dev/mapper/External-Hydrus: "/mnt/External/Hydrus"
+  PARTUUID="11e488de-a04b-4f43-a43a-2ff36411207a": "/mnt/Overdrive"
